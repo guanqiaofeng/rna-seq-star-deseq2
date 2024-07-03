@@ -17,8 +17,8 @@ rule deconvolutexengsort:
       xengsortidx = config["ref"]["xengsortidx"],
       xengsortcontainer = config['env']['xengsort'],
       sampleid = "{sample}"
-    threads: 4
-    shell:
+   threads: 4
+   shell:
       """
       module load apptainer/1.0.2
       module load pigz/2.6 
