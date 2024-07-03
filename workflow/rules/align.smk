@@ -14,11 +14,11 @@ rule deconvolutexengsort:
     #hostf1 =  temp("results/xengsort/{sample}-host.1.fq"),
     #hostf2 =  temp("results/xengsort/{sample}-host.2.fq")
    params:
-      xengsortidx=config["ref"]["xengsortidx"],
-      xengsortcontainer=config['env']['xengsort'],
-      sampleid="{sample}"
-   threads: 4
-   shell:
+      xengsortidx = config["ref"]["xengsortidx"],
+      xengsortcontainer = config['env']['xengsort'],
+      sampleid = "{sample}"
+    threads: 4
+    shell:
       """
       module load apptainer/1.0.2
       module load pigz/2.6 
