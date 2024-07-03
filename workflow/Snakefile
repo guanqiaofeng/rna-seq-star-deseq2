@@ -2,20 +2,11 @@
 # with --use-conda --use-singularity
 #container: "docker://continuumio/miniconda3"
 
-<<<<<<< HEAD
 #workdir: "/cluster/projects/mcgahalab/data/mcgahalab/wither_mcgaha_ram/snakemake_workflow/"
 #workdir: "/cluster/home/selghamr/workflows/intialize/rnaseq-star"
 #workdir:"/cluster/projects/cesconlab/Projects/TGL10_Oct2021/rnaseq-star"
-workdir:"/cluster/projects/cesconlab/Projects/TFRI_TNBC/UHN_PDX_PDO_Cescon/rnaseq/20200824/rnaseq-star"
+workdir:"/cluster/projects/cesconlab/collaborations/CesconPDX/RNASeq"
 
-=======
-#workdir: "/cluster/projects/mcgahalab/data/mcgahalab/sacher_nsclc_tslp/snakemake-workflow/"
-#workdir: "/cluster/projects/mcgahalab/data/mcgahalab/teresa/210121_A00827_0252_BH25WGDRXY_McGaha_Kebria/snakemake-workflow/"
-#workdir: "/cluster/projects/mcgahalab/data/mcgahalab/sara_MSM_SSM"
-#workdir: "/cluster/projects/mcgahalab/data/mcgahalab/INSPIRE"
-workdir: "/cluster/projects/mcgahalab/data/mcgahalab/wither_mcgaha_ram/snakemake_workflow/"
-#workdir: "/cluster/home/quever/workflows/initialize/rnaseq_test/"
->>>>>>> c5c088ff21fe7bb6df1a24dd0a1051cf8cafa0d7
 
 ##### load rules #####
 include: "rules/common.smk"
@@ -35,9 +26,6 @@ rule all:
     input:
         "results/pca.pdf",
         get_final_output(),
-<<<<<<< HEAD
-=======
         "results/immune/immunedeconv.rds",
->>>>>>> c5c088ff21fe7bb6df1a24dd0a1051cf8cafa0d7
         "results/counts/all_tpm.tsv",
         "results/qc/multiqc_report.html",

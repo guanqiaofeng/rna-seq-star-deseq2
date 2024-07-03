@@ -1,10 +1,10 @@
 rule deconvolutexengsort:
-  input:
-    f1 =  get_r1,
-    f2 =  get_r2
-  output:
-    graftf1 =  "results/xengsort/{sample}-graft.1.fq.gz",
-    graftf2 =  "results/xengsort/{sample}-graft.2.fq.gz",
+   input:
+      f1 =  get_map_reads_input_R1,
+      f2 =  get_map_reads_input_R2
+   output:
+      graftf1 =  "results/xengsort/{sample}-graft.1.fq.gz",
+      graftf2 =  "results/xengsort/{sample}-graft.2.fq.gz",
     #neitherf1 =  temp("results/xengsort/{sample}-neither.1.fq"),
     #neitherf2 =  temp("results/xengsort/{sample}-neither.2.fq"),
     #bothf1 =  temp("results/xengsort/{sample}-both.1.fq"),
@@ -13,37 +13,37 @@ rule deconvolutexengsort:
     #ambiguousf2 =  temp("results/xengsort/{sample}-ambiguous.2.fq"),
     #hostf1 =  temp("results/xengsort/{sample}-host.1.fq"),
     #hostf2 =  temp("results/xengsort/{sample}-host.2.fq")
-  params:
-    xengsortidx=config["ref"]["xengsortidx"],
-    xengsortcontainer=config['env']['xengsort'],
-    sampleid="{sample}"
-  threads: 4
-  shell:
-    """
-    module load apptainer/1.0.2
-    module load pigz/2.6 
-    
-    mkdir -p results/xengsort
-    mkdir tmp
-    zcat {input.f1} > tmp/{params.sampleid}_R1.fastq
-    zcat {input.f2} > tmp/{params.sampleid}_R2.fastq
-    
-    apptainer run {params.xengsortcontainer} \
-    xengsort classify \
-    --index {params.xengsortidx} \
-    --fastq tmp/{params.sampleid}_R1.fastq \
-    --pairs tmp/{params.sampleid}_R2.fastq \
-    --prefix results/xengsort/{params.sampleid} \
-    --compression none \
-    -T {threads} \
-    --progress \
-    --filter
-    
-    rm tmp/{params.sampleid}_R1.fastq
-    rm tmp/{params.sampleid}_R2.fastq
-    pigz -{threads} results/xengsort/{params.sampleid}-graft.1.fq
-    pigz -{threads} results/xengsort/{params.sampleid}-graft.2.fq
-    """
+   params:
+      xengsortidx=config["ref"]["xengsortidx"],
+      xengsortcontainer=config['env']['xengsort'],
+      sampleid="{sample}"
+   threads: 4
+   shell:
+      """
+      module load apptainer/1.0.2
+      module load pigz/2.6 
+      
+      mkdir -p results/xengsort
+      mkdir tmp
+      zcat {input.f1} > tmp/{params.sampleid}_R1.fastq
+      zcat {input.f2} > tmp/{params.sampleid}_R2.fastq
+      
+      apptainer run {params.xengsortcontainer} \
+      xengsort classify \
+      --index {params.xengsortidx} \
+      --fastq tmp/{params.sampleid}_R1.fastq \
+      --pairs tmp/{params.sampleid}_R2.fastq \
+      --prefix results/xengsort/{params.sampleid} \
+      --compression none \
+      -T {threads} \
+      --progress \
+      --filter
+      
+      rm tmp/{params.sampleid}_R1.fastq
+      rm tmp/{params.sampleid}_R2.fastq
+      pigz -{threads} results/xengsort/{params.sampleid}-graft.1.fq
+      pigz -{threads} results/xengsort/{params.sampleid}-graft.2.fq
+      """
 
 rule align_pe:
     input:
