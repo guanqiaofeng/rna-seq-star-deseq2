@@ -4,7 +4,7 @@ rule deconvolutexengsort:
       f2 =  get_map_reads_input_R2
    output:
       graftf1 =  "results/xengsort/{sample}-graft.1.fq.gz",
-      graftf2 =  "results/xengsort/{sample}-graft.2.fq.gz",
+      graftf2 =  "results/xengsort/{sample}-graft.2.fq.gz"
     #neitherf1 =  temp("results/xengsort/{sample}-neither.1.fq"),
     #neitherf2 =  temp("results/xengsort/{sample}-neither.2.fq"),
     #bothf1 =  temp("results/xengsort/{sample}-both.1.fq"),
