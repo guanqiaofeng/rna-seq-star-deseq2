@@ -11,12 +11,11 @@ workdir:"/cluster/projects/cesconlab/collaborations/CesconPDX/RNASeq"
 ##### load rules #####
 include: "rules/common.smk"
 include: "rules/ref.smk"
-include: "rules/trim.smk"
-include: "rules/qc.smk"
-include: "rules/align.smk"
-include: "rules/diffexp.smk"
+#include: "rules/trim.smk"
+#include: "rules/qc.smk"
+#include: "rules/diffexp.smk"
 include: "rules/countmatrix.smk"
-include: "rules/immune.smk"
+#include: "rules/immune.smk"
 include: "rules/genotyping.smk"
 
 
@@ -24,8 +23,9 @@ include: "rules/genotyping.smk"
 
 rule all:
     input:
-        "results/pca.pdf",
-        get_final_output(),
-        "results/immune/immunedeconv.rds",
+#        "results/pca.pdf",
+#        get_final_output(),
+#        "results/immune/immunedeconv.rds",
         "results/counts/all_tpm.tsv",
-        "results/qc/multiqc_report.html",
+        "results/counts/all.tsv",
+#        "results/qc/multiqc_report.html",
