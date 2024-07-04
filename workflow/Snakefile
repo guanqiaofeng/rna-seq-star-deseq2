@@ -27,5 +27,5 @@ rule all:
 #        get_final_output(),
 #        "results/immune/immunedeconv.rds",
         "results/counts/all_tpm.tsv",
-        "results/counts/all.tsv",
+        "results/counts/all.tsv"
 #        "results/qc/multiqc_report.html",
