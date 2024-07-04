@@ -1,41 +1,37 @@
-rule replace_rg_pe:
+rule replace_rg:
   input:
-    get_star_bam,
+    get_star_bam
   output:
-    "results/star/pe/{sample}-{unit}/Aligned.rg.bam",
+    "results/star/rg/{sample}/Aligned.rg.bam",
   log:
-    "logs/picard/replace_rg_pe/{sample}-{unit}.log"
+    "logs/picard/replace_rg/{sample}.log"
   params:
-    "RGLB=lib1 RGPL=illumina RGPU={sample}-{unit} RGSM={sample}-{unit}"
+    "RGLB=lib1 RGPL=illumina RGPU={sample} RGSM={sample}"
   resources:
     mem_mb=1024
   wrapper:
     "v0.75.0/bio/picard/addorreplacereadgroups"
 
-rule replace_rg_se:
+rule index_rg:
   input:
-    get_star_bam,
+    get_rg_bam,
   output:
-    "results/star/se/{sample}-{unit}/Aligned.rg.bam",
+    "results/star/rg/{sample}/Aligned.rg.bam.bai",
   log:
-    "logs/picard/replace_rg_se/{sample}-{unit}.log"
-  params:
-    "RGLB=lib1 RGPL=illumina RGPU={sample}-{unit} RGSM={sample}-{unit}"
-  resources:
-    mem_mb=1024
+    "logs/samtools/index/{sample}.log"
   wrapper:
-    "v0.75.0/bio/picard/addorreplacereadgroups"
+    "v0.75.0/bio/samtools/index"
 
 rule collect_allelic_counts:
   input:
     bam=get_rg_bam,
     bai=get_rg_bai,
   output:
-    "results/genotyping/{sample}-{unit}.allelicCounts.tsv",
+    "results/genotyping/{sample}.allelicCounts.tsv",
   conda:
     "../envs/gatk.yaml",
   log:
-    "logs/gatk/collectalleliccounts/{sample}-{unit}.log"
+    "logs/gatk/collectalleliccounts/{sample}.log"
   params:
     ref=config['ref_index']['genome'],
     target=config['genotyping']['target'],
@@ -43,7 +39,7 @@ rule collect_allelic_counts:
     "touch {output}; "
     "echo {input.bam} > {log}; "
     "echo {input.bai} >> {log}; "
-    "gatk --java-options '-Xmx20G  -XX:ParallelGCThreads=4' CollectAllelicCounts "
+    "gatk --java-options '-Xmx59G  -XX:ParallelGCThreads=1' CollectAllelicCounts "
     "-I {input.bam} "
     "-R {params.ref} "
     "-L {params.target} "
@@ -51,24 +47,28 @@ rule collect_allelic_counts:
 
 rule categorizeAD_gatk:
   input:
-    "results/zygosity/counts/{sample}.allelicCounts.tsv",
+    "results/genotyping/{sample}.allelicCounts.tsv",
   output:
-    intermediate=temp("results/zygosity/counts/{sample}_out.tmp"),
-    simple=temp("results/zygosity/counts/{sample}_out.tsv"),
+    intermediate=temp("results/genotyping/{sample}_out.tmp"),
+    simple=temp("results/genotyping/{sample}_out.tsv"),
   params:
     ref=2,
     alt=3,
+    mincov=10,
   conda:
     "../envs/perl.yaml",
   shell:
     "grep -v '^@' {input} | tail -n +2 > {output.intermediate}; "
-    "perl workflow/scripts/allelic_count_helper.pl categorize "
-    "{output.intermediate} {params.ref} {params.alt} > {output.simple}"
+    "perl scripts/allelic_count_helper.pl categorize "
+    "{output.intermediate} {params.ref} {params.alt} {params.mincov} > {output.simple}"
 
 
 rule aggregate_AD:
   input:
-    expand("results/zygosity/counts/{sample}_out.tsv", sample=samples.index),
+    expand(
+        "results/genotyping/{unit.sample_name}-{unit.unit_name}_out.tsv",
+        unit=units.itertuples(),
+    ),
   output:
     "results/zygosity/AD/aggregate.csv",
   params:
@@ -88,7 +88,7 @@ rule get_AD_lines:
   conda:
     "../envs/perl.yaml",
   shell:
-    "perl workflow/scripts/allelic_count_helper.pl setlines "
+    "perl scripts/allelic_count_helper.pl setlines "
     "{input} {params.min_n} > {output}; "
 
 rule filt_AD_raw:
@@ -98,12 +98,15 @@ rule filt_AD_raw:
   output:
     "results/zygosity/AD/aggregate_filt.csv",
   params:
-    samples=expand("{sample}", sample=samples.index),
+    samples=expand(
+        "{unit.sample_name}-{unit.unit_name}",
+        unit=units.itertuples(),
+    ),
   conda:
     "../envs/perl.yaml",
   shell:
     "echo {params.samples} | sed 's/\s/,/g' > {output}; "
-    "perl workflow/scripts/allelic_count_helper.pl getlines "
+    "perl scripts/allelic_count_helper.pl getlines "
     "{input.filt_lines} {input.aggregate_raw} >> {output}; "
 
 rule filt_AD_dbsnp:
@@ -116,7 +119,7 @@ rule filt_AD_dbsnp:
   conda:
     "../envs/perl.yaml",
   shell:
-    "perl workflow/scripts/allelic_count_helper.pl getlines "
+    "perl scripts/allelic_count_helper.pl getlines "
     "{input.filt_lines} {params.target} > {output}; "
 
 rule run_wp_zygosity:

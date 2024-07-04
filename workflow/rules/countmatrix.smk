@@ -53,19 +53,19 @@ rule prepare_reference:
 
 rule calculate_expression:
   input:
-    bam=get_star_transcriptome,
+    bam=lambda wc: get_star_output_all_units(wc, fi='transcriptome', use='single'),
     reference="ref/reference.seq",
   output:
-    genes_results="results/rsem/{sample}-{unit}.genes.results",
-    isoforms_results="results/rsem/{sample}-{unit}.isoforms.results",
-    tbam=temp("results/rsem/{sample}-{unit}.transcript.bam"),
-    gbam=temp("results/rsem/{sample}-{unit}.genome.bam"),
+    genes_results="results/rsem/{sample}.genes.results",
+    isoforms_results="results/rsem/{sample}.isoforms.results",
+    tbam=temp("results/rsem/{sample}.transcript.bam"),
+    gbam=temp("results/rsem/{sample}.genome.bam"),
   params:
-    outprefix="results/rsem/{sample}-{unit}",
+    outprefix="results/rsem/{sample}",
     paired_end=lambda w: "--paired-end" if is_paired_end(w.sample) else "",
     extra="-bam --estimate-rspd --output-genome-bam --time --forward-prob 0 --seed 42",
   log:
-    "logs/rsem/calculate_expression/{sample}-{unit}.log",
+    "logs/rsem/calculate_expression/{sample}.log",
   shell:
     "ref=$(echo {input.reference} | sed 's/\\..*//'); "
     "module load rsem/1.3.0; "
@@ -78,6 +78,8 @@ rule calculate_expression:
     "$ref "
     "{params.outprefix} "
     "> {log} 2>&1"
+
+#
 
 #rule rsem_generate_data_matrix:
 #  input:
@@ -136,10 +138,15 @@ rule format_tpm_matrix:
   input:
     "results/counts/all_tpm.tmp",
   output:
-    "results/counts/all_tpm.tsv",
+    round="results/counts/all_tpm.rounded.tsv",
+    tpm="results/counts/all_tpm.tsv",
   shell:
-    "sed 's/\"//g' {input} |  "
-    "sed 's/results\/rsem\///g' | "
-    "sed 's/-merged.genes.results//g' | "
-    "sed '1 s/^/gene/' | "
-    "sed -e 's/\.[0-9]*//g' > {output}"
+    '''
+    sed 's/\"//g' {input} |
+    sed 's/results\/rsem\///g' |
+    sed 's/-merged.genes.results//g' |
+    sed '1 s/^/gene/' > {output.tpm}
+    
+     
+    sed -e 's/\.[0-9]*//g' {output.tpm} > {output.round}
+    '''

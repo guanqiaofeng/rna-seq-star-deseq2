@@ -13,6 +13,10 @@ ref:
   release: 100
   # Genome build
   build: GRCh38
+  xengsortidx: "/cluster/projects/cesconlab/References/xengsort_RNA/idx_grcm38_grch38/xengsortidx"
+  
+env:
+  xengsort: '/cluster/projects/cesconlab/envs/containers/xengsort/xengsort.sif'
 
 ref_index:
   bwa-index: "ref/genomes/human/GRCh38/BWAIndex"
