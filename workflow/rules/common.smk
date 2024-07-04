@@ -78,8 +78,8 @@ def get_star_output_all_units(wildcards, fi="coord", use='all'):
     elif fi == 'transcriptome':
         outfile = "Aligned.toTranscriptome.out.bam"
     else:
-	outfile = "ReadsPerGene.out.tab"
-    res = []
+	    outfile = "ReadsPerGene.out.tab"
+        res = []
     if use == 'all':
         for unit in units.itertuples():
             if is_paired_end(unit.sample_name):
