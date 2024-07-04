@@ -124,3 +124,10 @@ def get_star_output(wildcards, fi="coord", bai=False):
     )
     return res
     
+def get_cutadapt_pipe_input(wildcards):
+    files = list(
+        sorted(glob.glob(units.loc[wildcards.sample].loc[wildcards.unit, wildcards.fq]))
+    )
+    assert len(files) > 0
+    return files
+
