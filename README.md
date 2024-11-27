@@ -48,15 +48,46 @@ Link to the original snakemake workflow: [snakemake-workflows/rna-seq-star-deseq
 ## Quick-Setup
 As states above, this workflow is set up to work on the H4H cluster. As such, there are major limitations when working on this system. For instance, only the home directory contains internet access while typically, all analysis needs to be conducted on the project directories which can only be accessed on nodes with no internet access. Additionally, the home directory contains a very limited amount of storage space.
 
-### 0. Install Snakemake as a conda env (Build node)
+Understanding nodes:
+- **Build Node**: node when you directly login h4h cluster
+- **Interactive Node**: after login h4h cluster, enter interactive node through `salloc` command e.g. `salloc -c 1 -t 5:0:0 --mem 1G`
+
+### Environment Set up
+#### 0.1 Install Miniconda (Build node)
+Login H4H cluster and follow the link to [install miniconda] (https://docs.anaconda.com/miniconda/install/)
+
+#### 0.2 Install Snakemake as a conda env (Build node)
 More detailed information can be found on the [snakemake docs](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html).
+
 ```
 conda install -n base -c conda-forge mamba
 mamba create -c conda-forge -c bioconda -n snakemake snakemake
 ```
 
+#### 0.3 Create github account
+To clone this github repository, you will need to have a github account, where ssh keys needed to be set up in your h4h account and github account.
+
 ### 1. Clone the workflow (Build node)
-We first want to clone the workflow to our workflow directory in our home. This requires internet access, so be sure to log in to the build node first and activate your snakemake conda env:
+We first want to clone the workflow to our workflow directory in our home. This requires internet access, so be sure to log in to the build node first and activate your snakemake conda env with
+
+```
+mamba activate snakemake
+```
+
+If it is the first time that you connect to github ssh, you will need to configure ssh keys first. Run the following command and hit ENTER in response to prompts. `-t rsa` indicates key type **RSA**, one of the most common SSH key. `-b 4096` specifies a high security level. 
+
+```
+ssh-keygen -t rsa -b 4096
+```
+
+Copy your public key
+
+```
+cat ~/.ssh/id_rsa.pub
+```
+Open your github account, click your icon on the top right corner, select `settings`, then `SSH and GPG keys`. Select `New SSH key` and enter the copied public key in the `key` field. Title can be whatever you like, and this case we will use `h4h`. Save it by clicking `Add SSH key`.
+
+Now we can clone this github repository to your h4h home directory now.
 ```
 cd ~/workflows
 git clone git@github.com:Cesconlab/rna-seq-star-deseq2.git
