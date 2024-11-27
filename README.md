@@ -92,17 +92,39 @@ Now we can clone this github repository to your h4h home directory now.
 cd ~/workflows
 git clone git@github.com:Cesconlab/rna-seq-star-deseq2.git
 ```
+Successful clone will print to the screen something like this
+```
+Cloning into 'rna-seq-star-deseq2'...
+remote: Enumerating objects: 1400, done.
+remote: Counting objects: 100% (445/445), done.
+remote: Compressing objects: 100% (65/65), done.
+remote: Total 1400 (delta 390), reused 406 (delta 380), pack-reused 955 (from 1)
+Receiving objects: 100% (1400/1400), 17.02 MiB | 0 bytes/s, done.
+Resolving deltas: 100% (879/879), done.
+```
+After clone, enter the `rna-seq-star-deseq2` directory and get the `PATH` by `pwd`. 
+```
+cd rna-seq-star-deseq2
+pwd
+```
+Copy the `PATH` and we will need it in the next step. 
 
 ### 2. Setup your project directory (interactive-node)
 Next we want to set up the project directory, this requires some symlinking and formatting of the file names.
+First, enter the interactive node by
+```
+salloc -c 1 -t 5:0:0 --mem 1G
+```
+Next, change to your project directory. You should have your own workspace directory under `/cluster/projects/cesconlab/workspace/YOURNAME`. You can create different projects under your workspace directory. 
 Within your project directory, you will need to create the following directories:
 ```
+cd /cluster/projects/cesconlab/workspace/YOURNAME/PROJECTNAME
 mkdir config data logs resources results
 ```
 
-and we want to symlink the following directories:
+and we want to symlink the following directories. Change `/path/to/rna-seq-star-deseq2/` to the `PATH` you got in the previous step:
 ```
-workflowpath='/path/to/rna-seq-star-deseq2/
+workflowpath='/path/to/rna-seq-star-deseq2/'
 ln -s ${workflowpath}/workflow/scripts .
 ln -s ${workflowpath}/slurm .
 ```
@@ -179,7 +201,7 @@ cd ~/workflows/intialize/rnaseq-star
 
 mkdir config data resources
 ln -s $(readlink -f /cluster/home/selghamr/workflows/rna-seq-star-deseq2/scripts) .
-ln -s $(readlink -f $/cluster/home/selghamr/workflows/rna-seq-star-deseq2/slurm) .
+ln -s $(readlink -f /cluster/home/selghamr/workflows/rna-seq-star-deseq2/slurm) .
 
 cp /cluster/home/selghamr/workflows/rna-seq-star-deseq2/config/* config/
 ```
