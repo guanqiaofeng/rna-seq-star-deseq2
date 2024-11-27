@@ -52,7 +52,7 @@ Understanding nodes:
 - **Build Node**: node when you directly login h4h cluster
 - **Interactive Node**: after login h4h cluster, enter interactive node through `salloc` command e.g. `salloc -c 1 -t 5:0:0 --mem 1G`
 
-### Environment Set up
+### 0. Environment Set up
 #### 0.1 Install Miniconda (Build node)
 Login H4H cluster and follow the link to [install miniconda] (https://docs.anaconda.com/miniconda/install/)
 
@@ -232,7 +232,8 @@ Now that you have your "intialize" and your "project" directory set up, you can 
 
 Before you build your conda-envs, you'll need to switch the `workdir:` path in your `workflow/Snakefile`:
 ```
-> workflow/Snakefile
+vim /path/to/workflows/rna-seq-star-deseq2/workflow/Snakefile
+
 workdir: "/path/to/workflows/intialize/rnaseq-star"
 ```
 
